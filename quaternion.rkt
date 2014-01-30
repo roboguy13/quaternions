@@ -70,14 +70,6 @@
 ;     matrices and quaternions, i.e. it must obey the law:
 ;
 ;       q is a valid quaterion => (f (quaternion->matrix q1) (quaternion->matrix q2) ...) is a well-formed matrix representation of a quaternion
-;
-;     Another way of stating this is to say that the operation
-;     must form a moniod homomorphism from quaternions and matrices:
-;
-;      Given an operation *, conversion functions q (matrix->quaterion) and m (quaternion->matrix)
-;      and quaternions x and y, there must exist an operation + such that:
-;
-;       q(m(x * y)) == q(m(x) + m(y))
 (define (quaternion-op f . qs)
   (matrix->quaternion
        (apply f (map quaternion->matrix
