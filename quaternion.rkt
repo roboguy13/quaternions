@@ -87,6 +87,11 @@
 ; These changes were added by Alexa.               ;
 ; But you can probably see that somewhere already. ;
 ;--------------------------------------------------;
+
+;--Returns the magnitude of a quaternion
+;--Note that this takes a quaternion in vector (list) form
+(define (quaternion-mag Q)
+  (sqrt (+ (expt (car Q) 2) (expt (cadr Q) 2) (expt (caddr Q) 2) (expt (cadddr Q) 2))))
   
 ;--If the string is a number, returns it as a number, otherwise as a symbol
 (define (string->symOrNum str)
