@@ -93,11 +93,16 @@
 (define (quaternion-mag Q)
   (sqrt (+ (expt (car Q) 2) (expt (cadr Q) 2) (expt (caddr Q) 2) (expt (cadddr Q) 2))))
   
+;--Returns the norm of a vector
+(define (norm V)
+  (if (null? V)
+      0
+      (+ (expt (car V) 2) (norm (cdr V)))))
+
 ;--Returns the inverse of a quaternion
 ;--Takes a quaterion in vector form
 (define (quaternion-inv Q)
-  (define norm (+ (expt (car Q) 2) (expt (cadr Q) 2) (expt (caddr Q) 2) (expt (cadddr Q) 2)))
-  (cons (/ (car Q) norm) (map (λ(x)(/ x (* norm -1))) (cdr Q))))
+  (cons (/ (car Q) (norm Q)) (map (λ(x)(/ x (* (norm Q) -1))) (cdr Q))))
 
 ;--Checks to see if two quaternions are equal
 ;--Somewhat unnecessary and can be taken out,
@@ -120,6 +125,41 @@
 ;--Takes a quaternion in vector form
 (define (quaternion-div Q . Qs)
   (quaternion-prod Q (apply quaternion-inv Qs))) 
+  
+;---------------------------------------------;
+; The following definitions were found at     ;
+; http://www.lce.hut.fi/~ssarkka/pub/quat.pdf ;
+;---------------------------------------------;
+
+;--Gives the logarithm of a quaternion
+;--Takes a quaternion in vector form
+;--Note that log is our "ln" - the natural log
+(define (quaternion-log Q)
+  (if (equal? (cdr Q) '(0 0 0))
+      (cons (log (car Q)) (cdr Q))
+      (cons (log (sqrt (norm Q))) (multiplyByC (* (/ (sqrt (norm (cdr Q)))) (acos (/ (car Q) (sqrt (norm Q))))) (cdr Q)))))
+
+;--Gives the exponential of a quaternion
+;--Takes a quaternion in vector form
+;--Note that this is e^quaternion
+(define (quaternion-exp Q)
+  (if (equal? (cdr Q) '(0 0 0))
+      (cons (exp (car Q)) (cdr Q))
+      (multiplyByC (exp (car Q)) (cons (cos (sqrt (norm (cdr Q)))) (multiplyByC (* (/ (norm (cdr Q))) (sin (norm (cdr Q)))) (cdr Q))))))
+
+;--Gives Q^P, where at least one is a quaternion
+;--Can take q^#, #^q, or q^q
+;--Takes quaternions in vector form
+(define (quaternion-expt Q P)
+  (cond
+    ((number? P) (quaternion-exp (multiplyByC P (quaternion-log Q))))
+    ((number? Q) (quaternion-expt (cons Q '(0 0 0)) P))
+    (else (quaternion-exp (quaternion-prod (quaternion-log Q) P)))))
+
+;--- STILL NEED ---;
+; quaternion-sin   ;
+; quaternion-cos   ;
+;------------------;
   
 ;--If the string is a number, returns it as a number, otherwise as a symbol
 (define (string->symOrNum str)
