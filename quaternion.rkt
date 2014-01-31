@@ -93,6 +93,34 @@
 (define (quaternion-mag Q)
   (sqrt (+ (expt (car Q) 2) (expt (cadr Q) 2) (expt (caddr Q) 2) (expt (cadddr Q) 2))))
   
+;--Returns the inverse of a quaternion
+;--Takes a quaterion in vector form
+(define (quaternion-inv Q)
+  (define norm (+ (expt (car Q) 2) (expt (cadr Q) 2) (expt (caddr Q) 2) (expt (cadddr Q) 2)))
+  (cons (/ (car Q) norm) (map (λ(x)(/ x (* norm -1))) (cdr Q))))
+
+;--Checks to see if two quaternions are equal
+;--Somewhat unnecessary and can be taken out,
+;--but I just put it in to keep quaternion operation syntax consistent
+(define (quaternion-eq? Q R)
+  (equal? Q R))
+
+;--Multiplies a vector by constant C
+(define (multiplyByC C V)
+  (if (null? V)
+      '()
+      (cons (* (car V) C) (multiplyByC C (cdr V)))))
+      
+;--Subtracts Qs from Q, consistent with Scheme standard
+;--Takes a quaternion in vector form
+(define (quaternion-diff Q . Qs)
+  (quaternion-sum Q (apply multiplyByC -1 Qs)))
+
+;--Divides first Q by all other Qs, consistent with Scheme standard
+;--Takes a quaternion in vector form
+(define (quaternion-div Q . Qs)
+  (quaternion-prod Q (apply quaternion-inv Qs))) 
+  
 ;--If the string is a number, returns it as a number, otherwise as a symbol
 (define (string->symOrNum str)
   (if (number? (string->number str))
