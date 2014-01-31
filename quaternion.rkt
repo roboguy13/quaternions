@@ -80,3 +80,34 @@
 
 (define quaternion-prod
   (curry quaternion-op matrix-prod))
+  
+  
+  
+;--------------------------------------------------;
+; These changes were added by Alexa.               ;
+; But you can probably see that somewhere already. ;
+;--------------------------------------------------;
+  
+;--If the string is a number, returns it as a number, otherwise as a symbol
+(define (string->symOrNum str)
+  (if (number? (string->number str))
+               (string->number str)
+               (string->symbol str)))
+
+;--This can handle L in both cases:
+;--  '(+ ## ##i ...) - not necessarily complete
+;--  '##+##i+... - not necessarily complete
+;--Note that there are no spaces between numbers and + symbols in the latter example
+(define (addition->quaternion L)
+  (cond
+    ((null? L) '(0 0 0 0))
+    ((regexp-match? #rx"[1-9i-k]\\+" (~a L)) (addition->quaternion (cons '+ (map string->symOrNum (regexp-split #rx"\\+" (~a L)))))) ;first example and needs to be split
+    ((number? L) (list L 0 0 0)) ;##
+    ((symbol? L) (case (substring (~a L) (- (string-length (~a L)) 1) (string-length (~a L))) ;##i, ##j, or ##k
+                   (("i") (list 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1))) 0 0))
+                   (("j") (list 0 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1))) 0))
+                   (("k") (list 0 0 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1)))))))
+    ((eq? '+ (car L)) ;(+ ## ##i ...) or (+) from recursion
+     (if(null? (cdr  L)) ;just (+)
+        '(0 0 0 0)
+        (vector-sum (addition->quaternion (cadr L)) (addition->quaternion (cons '+ (cddr L)))))))) 
