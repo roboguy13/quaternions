@@ -102,9 +102,7 @@
 ;--Returns the inverse of a quaternion
 ;--Takes a quaterion in vector form
 (define (quaternion-inv Q)
-  (if (list? (car Q))
-      (quaternion-inv (car Q))
-      (cons (/ (car Q) (norm Q)) (map (λ(x)(/ x (* (norm Q) -1))) (cdr Q)))))
+  (cons (/ (car Q) (norm Q)) (map (λ(x)(/ x (* (norm Q) -1))) (cdr Q))))
 
 ;--Checks to see if two quaternions are equal
 ;--Somewhat unnecessary and can be taken out,
@@ -114,26 +112,19 @@
 
 ;--Multiplies a vector by constant C
 (define (multiplyByC C V)
-  (cond
-    ((null? V) '())
-    ((list? (car V)) (multiplyByC C (car V)))
-    (else (cons (* (car V) C) (multiplyByC C (cdr V))))))
+  (if (null? V)
+      '()
+      (cons (* (car V) C) (multiplyByC C (cdr V)))))
       
 ;--Subtracts Qs from Q, consistent with Scheme standard
 ;--Takes a quaternion in vector form
 (define (quaternion-diff Q . Qs)
-  (cond
-    ((null? (car Qs)) Q)
-    ((and (list? (caar Qs)) (equal? (length Qs) 1)) (quaternion-diff (quaternion-sum Q (multiplyByC -1 (caar Qs))) (cdar Qs)))
-    (else (quaternion-diff (quaternion-sum Q (multiplyByC -1 (car Qs))) (cdr Qs)))))
+  (quaternion-sum Q (apply multiplyByC -1 Qs)))
 
 ;--Divides first Q by all other Qs, consistent with Scheme standard
 ;--Takes a quaternion in vector form
 (define (quaternion-div Q . Qs)
-  (cond
-    ((null? (car Qs)) Q)
-    ((and (list? (caar Qs)) (equal? (length Qs) 1)) (quaternion-div (quaternion-prod Q (quaternion-inv (caar Qs))) (cdar Qs)))
-    (else (quaternion-div (quaternion-prod Q (quaternion-inv (car Qs))) (cdr Qs)))))
+  (quaternion-prod Q (apply quaternion-inv Qs))) 
   
 ;---------------------------------------------;
 ; The following definitions were found at     ;
