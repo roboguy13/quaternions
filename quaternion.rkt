@@ -262,15 +262,16 @@
              `(html (head (title "Quaternion Evaluation"))
                     (body
                      (h1 "Quaternion Evaluation") 
+                     (h2 "A project by Team Fourth Dimension")
                      (form((action
                             ,(make-url insert-post-handler)))
-                          "Quaternion to Evaluate:"
+                          "Expression to Evaluate:"
                           (br)
                           (input ((name "expression") (value "(* 2i+k 4+j+8k)")))
                           (input ((type "submit"))))
                      (a ((href "http://mathworld.wolfram.com/Quaternion.html"))
                         "What is a quaternion?")
-                     ,(render-posts)
+                     (div ((id "history")) ,(render-posts))
                      (br)))))
           (define (insert-post-handler request)
             (blog-insert-post!
@@ -296,11 +297,15 @@
 (define (render-posts)
   `(div ((class "posts"))
         '(style ((type "text/css"))
-                "body { background-image:url('http://wallpoper.com/images/00/22/77/94/pattern-other_00227794.jpg') }"
-                "form { font-family: Verdana; color:#ddd }"
+                "body { text-align:center; background-image:url('http://wallpoper.com/images/00/22/77/94/pattern-other_00227794.jpg') }"
+                "form { font-family: Verdana; color:#ddd; text-align:center }"
                 "input { font-family: Verdana; margin:3px }"
-                "h1 { font-family: Helvetica; text-align:center; color:#ddd; margin:20px }"
+                "h1 { font-family: Helvetica; color:#ddd; padding-top:20px }"
+                "h2 { font-family: Helvetica; color:#c00; margin-top:-20px; font-size:16px }"
+                "h3 { font-family: Helvetica; color:#ddd; font-size:20px }"
+                "#history { width:940px; overflow:hidden; margin: 10px auto; padding 0 0 20px 20px; background:#333; border-radius: 15px 15px 15px 15px}"
                 "p { font-family: Verdana; color:#ddd }"
                 "a:link {color:#aaa}"
                 "a:visited {color:#777}")
+        (h3 "History:")
         ,@(map render-post (blog-posts BLOG))))
