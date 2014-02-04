@@ -61,13 +61,16 @@
   (curry quaternion-op matrix-sum))
 
 (define (quaternion-prod a b)
-     ; Turn a quaternion from row vector form to column vector form
-     ; For example '(1 2 3 4)  ->  '((1) (2) (3) (4))
-  (define (quaternion->column-vector m)
-    (map list m))
+     ; Convert between row vector and column vector form
+     ; For example (row-vector->column-vector '(1 2 3 4))  ->  '((1) (2) (3) (4))
+  (define (row-vector->column-vector v)
+    (map list v))
+  (define (column-vector->row-vector v)
+    (map car v))
 
-  (matrix-prod (quaternion->matrix a)
-               (quaternion->column-vector b)))
+  (column-vector->row-vector
+   (matrix-prod (quaternion->matrix a)
+                (row-vector->column-vector b))))
 
   
   
