@@ -61,19 +61,38 @@
 (define quaternion-sum
   (curry quaternion-op matrix-sum))
 
-(define (quaternion-prod a b)
-     ; Convert between row vector and column vector form
-     ; For example (row-vector->column-vector '(1 2 3 4))  ->  '((1) (2) (3) (4))
-  (define (row-vector->column-vector v)
-    (map list v))
-  (define (column-vector->row-vector v)
-    (map car v))
+(define (quaternion-prod qa qb)
+  (let ((a1 (car    qa))
+        (b1 (cadr   qa))
+        (c1 (caddr  qa))
+        (d1 (cadddr qa))
+        
+        (a2 (car    qb))
+        (b2 (cadr   qb))
+        (c2 (caddr  qb))
+        (d2 (cadddr qb)))
+  (list (-     (* a1 a2)
+               (* b1 b2)
+               (* c1 c2)
+               (* d1 d2))
 
-  (column-vector->row-vector
-   (matrix-prod (quaternion->matrix a)
-                (row-vector->column-vector b))))
+        (+    (* a1 b2)
+              (* b1 a2)
+              (* c1 d2)
+           (- (* d1 c2)))
+
+        (+    (* a1 c2)
+           (- (* b1 d2))
+              (* c1 a2)
+              (* d1 b2))
+
+        (+    (* a1 d2)
+              (* b1 c2)
+           (- (* c1 b2))
+              (* d1 a2)))))
 
 
+              
 ;--The conjugate of a quaternion
 ;--If q is a unit quaternion, the conjugate
 ;--is equal to the inverse.
