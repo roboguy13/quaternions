@@ -12,7 +12,9 @@
          quaternion-div
          quaternion-log
          quaternion-exp
-         quaternion-expt)
+         quaternion-expt
+         quaternion-sin
+         quaternion-cos)
 
 (define (quaternion->matrix q)
   (matrix-sum
