@@ -163,7 +163,19 @@
     ((number? Q) (quaternion-expt (cons Q '(0 0 0)) P))
     (else (quaternion-exp (quaternion-prod (quaternion-log Q) P)))))
 
-;--- STILL NEED ---;
-; quaternion-sin   ;
-; quaternion-cos   ;
-;------------------;
+;-----------------------------------------------;
+; I'm not sure whether or not this is correct.  ;
+; This is how you take the cos / sin of complex ;
+; numbers, so hopefully it translates?          ;
+; Verified true when only real and i are used   ;
+; in the quaternions. '(# # 0 0) - with cos.    ;
+; sin is under examination. There is a problem  ;
+; with code elsewhere here.                     ;
+;-----------------------------------------------;
+
+(define (quaternion-cos Q)
+  (multiplyByC 0.5 (quaternion-sum (quaternion-exp (quaternion-prod '(0 1 0 0) Q)) (quaternion-exp (quaternion-prod '(0 -1 0 0) Q)))))
+  
+
+(define (quaternion-sin Q)
+  (quaternion-div (quaternion-diff (quaternion-exp (quaternion-prod '(0 1 0 0) Q)) (quaternion-exp (quaternion-prod '(0 -1 0 0) Q))) '(0 2 0 0)))
