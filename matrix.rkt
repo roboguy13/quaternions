@@ -1,6 +1,7 @@
 #lang racket
 
 (provide vector-sum
+         vector-scalar-prod
          matrix-sum
          transpose
          matrix-prod
@@ -8,6 +9,9 @@
 
 (define vector-sum
   (curry map +))
+
+(define (vector-scalar-prod a v)
+  (map (curry * a) v))
 
 (define matrix-sum
   (curry map vector-sum))
@@ -35,3 +39,4 @@
 (define (matrix-scalar-prod a m)
   (map (curry map (curry * a))
        m))
+

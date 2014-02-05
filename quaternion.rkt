@@ -4,6 +4,7 @@
 
 (provide quaternion-sum
          quaternion-prod
+         quaternion-conj
          quaternion-mag
          quaternion-inv
          quaternion-eq?
@@ -72,6 +73,12 @@
    (matrix-prod (quaternion->matrix a)
                 (row-vector->column-vector b))))
 
+
+;--The conjugate of a quaternion
+;--If q is a unit quaternion, the conjugate
+;--is equal to the inverse.
+(define (quaternion-conj q)
+  (cons (car q) (map - (cdr q))))
   
   
 ;--------------------------------------------------;
