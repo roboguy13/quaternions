@@ -7,9 +7,11 @@
 
 ;--If the string is a number, returns it as a number, otherwise as a symbol
 (define (string->symOrNum str)
-  (if (number? (string->number str))
-               (string->number str)
-               (string->symbol str)))
+  (if (and (number? (string->number str))
+           (not (and (complex? (string->number str))
+                     (not (real? (string->number str))))))
+      (string->number str)
+      (string->symbol str)))
 
 ;--These are used for readability
 (define (last L)
@@ -48,11 +50,12 @@
           '(0 0 0 0)
           (vector-sum (go (first L))
                       (go (cons '+ (restOf L))))))))
-  (cond
+  (cond ; TODO: Add support for floating point and rational numbers
     ((regexp-match? #rx"[1-9i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
      (go (cons '+ (map string->symOrNum (regexp-match* "[0-9]|\\+[0-9i-k]+|\\-[0-9i-k]+" (~a L-orig))))))
     (else
      (go L-orig))))
+
 
 
 ;---------------------------------------------;
