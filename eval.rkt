@@ -38,13 +38,22 @@
     (cond
       ((null? L) '(0 0 0 0))
       ((number? L) (list L 0 0 0)) ;real number
-      ((symbol? L) (if (equal? (string-length (~a L)) 2) ;a single i, j, or k along with its sign
-                       (let ((chars (string->list (symbol->string L))))
-                         (go (string->symbol (list->string (cons (car chars) (cons #\1 (cdr chars))))))) ;puts a 1 as the coeffecient
-                       (case (substring (~a L) (penultimate L) (last L)) ;##i, ##j, or ##k
-                         (("i") (list 0 (coeff L) 0 0))
-                         (("j") (list 0 0 (coeff L) 0))
-                         (("k") (list 0 0 0 (coeff L))))))
+      ((symbol? L) 
+       (case L
+         ((i) (list 0 1 0 0))
+         ((j) (list 0 0 1 0))
+         ((k) (list 0 0 0 1))
+         (else
+          (let ((chars (string->list (~a L))))
+          (if (or (equal? (length chars) 1) ;a single i, j, or k along with its sign
+                  (and (equal? (length chars) 2)
+                       (or (eq? (car chars) #\+)
+                           (eq? (car chars) #\-))))
+              (go (string->symbol (list->string (cons (car chars) (cons #\1 (cdr chars)))))) ;puts a 1 as the coeffecient
+              (case (substring (~a L) (penultimate L) (last L)) ;##i, ##j, or ##k
+                (("i") (list 0 (coeff L) 0 0))
+                (("j") (list 0 0 (coeff L) 0))
+                (("k") (list 0 0 0 (coeff L)))))))))
       ((eq? '+ (car L)) ;(+ ## ##i ...) or (+) from recursion
        (if(null? (cdr  L)) ;just (+)
           '(0 0 0 0)
@@ -52,7 +61,7 @@
                       (go (cons '+ (restOf L))))))))
   (cond ; TODO: Add support for floating point and rational numbers
     ((regexp-match? #rx"[1-9i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
-     (go (cons '+ (map string->symOrNum (regexp-match* "[0-9]|\\+[0-9i-k]+|\\-[0-9i-k]+" (~a L-orig))))))
+     (go (cons '+ (map string->symOrNum (regexp-match* "(\\+|\\-)?[0-9i-k]+|[0-9]+" (~a L-orig))))))
     (else
      (go L-orig))))
 
