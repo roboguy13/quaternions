@@ -3,23 +3,17 @@
 (require "eval.rkt")
 (require mzlib/string)
 
-
-;----------------------------------------------------;
-; This is a direct copy-paste from my final project, ;
-; with a few modifications. Work in progress.        ;
-;----------------------------------------------------;
-
 (struct blog (posts) #:mutable)
 (struct post (expression))
 (define BLOG
   (blog '()))
 
-(define (start request) (render-blog-page request))
+(define (start request) (render-page request))
 
 (define (parse-post bindings)
   (post (extract-binding/single 'expression bindings)))
 
-(define (render-blog-page request)
+(define (render-page request)
   (local [(define (response-generator make-url)
             (response/xexpr
              `(html 
@@ -33,7 +27,7 @@
                             ,(make-url insert-post-handler)))
                           "Expression to Evaluate:"
                           (br)
-                          (input ((name "expression") (value "(* 2i+k 4+j+8k)") (size "30")))
+                          (input ((name "expression") (size "30")))
                           (input ((type "submit"))))
                      (div ((id "history")) ,(render-posts))
                      (br)))
@@ -43,7 +37,7 @@
           (define (insert-post-handler request)
             (blog-insert-post!
              BLOG (parse-post (request-bindings request)))
-            (render-blog-page request))]
+            (render-page request))]
     (send/suspend/dispatch response-generator)))
 
 (define (blog-insert-post! a-blog a-post)

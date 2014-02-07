@@ -11,6 +11,22 @@
                (string->number str)
                (string->symbol str)))
 
+;--These are used for readability
+(define (last L)
+  (string-length (~a L)))
+
+(define (penultimate L)
+  (- (string-length (~a L)) 1))
+
+(define (coeff L) ;before i, j, or k (or any single character)
+  (string->number (substring (~a L) 0 (penultimate L))))
+
+(define (first L) (cadr L)) ;first after an operation
+(define (second L) (caddr L)) ;second after an operation
+(define (restOf L) (cddr L)) ;everything after an operation except first (rest is a keyword already)
+(define (arguments E) (cdr E)) ;since car is the operation (+ - exp log ...)
+
+
 ;--This can handle L in both cases:
 ;--  '(+ ## ##i ...) - not necessarily complete
 ;--  '##+##i+... - not necessarily complete
@@ -18,18 +34,20 @@
 (define (addition->quaternion L)
   (cond
     ((null? L) '(0 0 0 0))
-    ((regexp-match? #rx"[1-9i-k]\\+" (~a L)) (addition->quaternion (cons '+ (map string->symOrNum (regexp-split #rx"\\+" (~a L)))))) ;first example and needs to be split
-    ((number? L) (list L 0 0 0)) ;##
+    ((regexp-match? #rx"[1-9i-k]\\+" (~a L)) ;this splits #+#i... to (+ # #i ...) and sends it back through
+        (addition->quaternion (cons '+ (map string->symOrNum (regexp-split #rx"\\+" (~a L))))))
+    ((number? L) (list L 0 0 0)) ;real number
     ((symbol? L) (if (equal? (string-length (~a L)) 1) ;a single i, j, or k
-                     (addition->quaternion (string->symbol (string-append "1" (~a L))))
-                     (case (substring (~a L) (- (string-length (~a L)) 1) (string-length (~a L))) ;##i, ##j, or ##k
-                       (("i") (list 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1))) 0 0))
-                       (("j") (list 0 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1))) 0))
-                       (("k") (list 0 0 0 (string->number (substring (~a L) 0 (- (string-length (~a L)) 1))))))))
+                     (addition->quaternion (string->symbol (string-append "1" (~a L)))) ;puts a 1 as the coeffecient
+                     (case (substring (~a L) (penultimate L) (last L)) ;##i, ##j, or ##k
+                       (("i") (list 0 (coeff L) 0 0))
+                       (("j") (list 0 0 (coeff L) 0))
+                       (("k") (list 0 0 0 (coeff L))))))
     ((eq? '+ (car L)) ;(+ ## ##i ...) or (+) from recursion
      (if(null? (cdr  L)) ;just (+)
         '(0 0 0 0)
-        (vector-sum (addition->quaternion (cadr L)) (addition->quaternion (cons '+ (cddr L)))))))) 
+        (vector-sum (addition->quaternion (first L))
+                    (addition->quaternion (cons '+ (restOf L)))))))) 
 
 
 ;---------------------------------------------;
@@ -48,22 +66,32 @@
      (case (car E)
        ((+) (cond
               ((equal? (length E) 1) 0) ;no arguments - 0 per Scheme Standard
-              ((equal? (length (cdr E)) 1) (quaternion-eval (cadr E))) ;one argument - equals itself
-              (else (quaternion-sum (quaternion-eval (cadr E)) (quaternion-eval (cons '+ (cddr E))) ))))
-       ((-) (if (equal? (length (cdr E)) 1) ;just one argument, so negative, not subtraction
-                (quaternion-eval (list '* -1 (cadr E)))
-                (quaternion-diff (quaternion-eval (cadr E)) (map quaternion-eval (cddr E)))))
+              ((equal? (length (arguments E)) 1) (quaternion-eval (first E))) ;one argument - equals itself
+              (else (quaternion-sum
+                        (quaternion-eval (first E))
+                        (quaternion-eval (cons '+ (restOf E)))))))
+       ((-) (if (equal? (length (arguments E)) 1) ;just one argument, so negative, not subtraction
+                (quaternion-eval (list '* -1 (first E)))
+                (quaternion-diff
+                    (quaternion-eval (first E))
+                    (map quaternion-eval (restOf E)))))
        ((*) (cond
               ((equal? (length E) 1) 1) ;no arguments - 1 per Scheme Standard
-              ((equal? (length (cdr E)) 1) (quaternion-eval (cadr E))) ;one argument - equals itself
-              (else (quaternion-prod (quaternion-eval (cadr E)) (quaternion-eval (cons '* (cddr E))) ))))
-       ((/) (if (equal? (length (cdr E)) 1) ;one argument - inverse, not division
-                (quaternion-eval (list '/ 1 (cadr E)))
-                (quaternion-div (quaternion-eval (cadr E)) (map quaternion-eval (cddr E)))))
-       ((exp) (quaternion-exp (quaternion-eval (cadr E))))
-       ((expt) (quaternion-expt (quaternion-eval (cadr E)) (quaternion-eval (caddr E))))
-       ((log) (quaternion-log (quaternion-eval (cadr E))))
-       ((sin) (quaternion-sin (quaternion-eval (cadr E))))
-       ((cos) (quaternion-cos (quaternion-eval (cadr E))))
-       ((magnitude) (quaternion-mag (quaternion-eval (cadr E))))
+              ((equal? (length (arguments E)) 1) (quaternion-eval (first E))) ;one argument - equals itself
+              (else (quaternion-prod
+                        (quaternion-eval (first E))
+                        (quaternion-eval (cons '* (restOf E)))))))
+       ((/) (if (equal? (length (arguments E)) 1) ;one argument - inverse, not division
+                (quaternion-eval (list '/ 1 (first E)))
+                (quaternion-div
+                    (quaternion-eval (first E))
+                    (map quaternion-eval (restOf E)))))
+       ((exp) (quaternion-exp (quaternion-eval (first E))))
+       ((expt) (quaternion-expt
+                   (quaternion-eval (first E))
+                   (quaternion-eval (second E))))
+       ((log) (quaternion-log (quaternion-eval (first E))))
+       ((sin) (quaternion-sin (quaternion-eval (first E))))
+       ((cos) (quaternion-cos (quaternion-eval (first E))))
+       ((magnitude) (quaternion-mag (quaternion-eval (first E))))
      ))))
