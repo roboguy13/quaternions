@@ -14,7 +14,9 @@
          quaternion-exp
          quaternion-expt
          quaternion-sin
-         quaternion-cos)
+         quaternion-cos
+
+         show-quaternion)
 
 (define (quaternion->matrix q)
   (matrix-sum
@@ -237,3 +239,26 @@
                      (quaternion-exp (quaternion-prod '(0 1 0 0) Q))
                      (quaternion-exp (quaternion-prod '(0 -1 0 0) Q)))
                  '(0 2 0 0)))
+
+(define (show-quaternion q)
+    ; Show a number's string representation if it isn't 0
+  (define (show-num n s)
+    (if (= n 0)
+        ""
+        s))
+    ; Automatically put a - instead of a + for negative numbers
+    ; `which` is the string containing the unit name (i, j, k or empty)
+  (define (show-addition n which)
+    (string-append 
+     (if (< n 0)
+         (string-append (number->string n)
+                        which)
+         (show-num n
+                   (string-append "+"
+                                  (number->string n)
+                                  which)))))
+  (string-append (show-num (real q)
+                           (number->string (real q)))
+                 (show-addition  (i-coeff q) "i")
+                 (show-addition  (j-coeff q) "j")
+                 (show-addition  (k-coeff q) "k")))

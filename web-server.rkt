@@ -1,6 +1,7 @@
 #lang web-server/insta
 
 (require "eval.rkt")
+(require "quaternion.rkt")  ; For show-quaternion
 (require mzlib/string)
 
 (struct blog (posts) #:mutable)
@@ -51,7 +52,7 @@
   `(div ((class "post"))
         (hr)
         (p,"Input: ", (expr->string expr))
-        (p,"Output: ",(expr->string(quaternion-eval expr)))))
+        (p,"Output: ",(show-quaternion (quaternion-eval expr)))))
 
 
 ;--Put CSS here
