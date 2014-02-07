@@ -31,23 +31,28 @@
 ;--  '(+ ## ##i ...) - not necessarily complete
 ;--  '##+##i+... - not necessarily complete
 ;--Note that there are no spaces between numbers and + symbols in the latter example
-(define (addition->quaternion L)
+(define (addition->quaternion L-orig)
+  (define (go L)
+    (cond
+      ((null? L) '(0 0 0 0))
+      ((number? L) (list L 0 0 0)) ;real number
+      ((symbol? L) (if (equal? (string-length (~a L)) 2) ;a single i, j, or k along with its sign
+                       (let ((chars (string->list (symbol->string L))))
+                         (go (string->symbol (list->string (cons (car chars) (cons #\1 (cdr chars))))))) ;puts a 1 as the coeffecient
+                       (case (substring (~a L) (penultimate L) (last L)) ;##i, ##j, or ##k
+                         (("i") (list 0 (coeff L) 0 0))
+                         (("j") (list 0 0 (coeff L) 0))
+                         (("k") (list 0 0 0 (coeff L))))))
+      ((eq? '+ (car L)) ;(+ ## ##i ...) or (+) from recursion
+       (if(null? (cdr  L)) ;just (+)
+          '(0 0 0 0)
+          (vector-sum (go (first L))
+                      (go (cons '+ (restOf L))))))))
   (cond
-    ((null? L) '(0 0 0 0))
-    ((regexp-match? #rx"[1-9i-k]\\+" (~a L)) ;this splits #+#i... to (+ # #i ...) and sends it back through
-        (addition->quaternion (cons '+ (map string->symOrNum (regexp-split #rx"\\+" (~a L))))))
-    ((number? L) (list L 0 0 0)) ;real number
-    ((symbol? L) (if (equal? (string-length (~a L)) 1) ;a single i, j, or k
-                     (addition->quaternion (string->symbol (string-append "1" (~a L)))) ;puts a 1 as the coeffecient
-                     (case (substring (~a L) (penultimate L) (last L)) ;##i, ##j, or ##k
-                       (("i") (list 0 (coeff L) 0 0))
-                       (("j") (list 0 0 (coeff L) 0))
-                       (("k") (list 0 0 0 (coeff L))))))
-    ((eq? '+ (car L)) ;(+ ## ##i ...) or (+) from recursion
-     (if(null? (cdr  L)) ;just (+)
-        '(0 0 0 0)
-        (vector-sum (addition->quaternion (first L))
-                    (addition->quaternion (cons '+ (restOf L)))))))) 
+    ((regexp-match? #rx"[1-9i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
+     (go (cons '+ (map string->symOrNum (regexp-match* "[0-9]|\\+[0-9i-k]+|\\-[0-9i-k]+" (~a L-orig))))))
+    (else
+     (go L-orig))))
 
 
 ;---------------------------------------------;
