@@ -257,8 +257,10 @@
                    (string-append "+"
                                   (number->string n)
                                   which)))))
-  (string-append (show-num (real q)
-                           (number->string (real q)))
-                 (show-addition  (i-coeff q) "i")
-                 (show-addition  (j-coeff q) "j")
-                 (show-addition  (k-coeff q) "k")))
+  (if (= (quaternion-mag q) 0)
+      "0"
+      (string-append (show-num (real q)
+                               (number->string (real q)))
+                     (show-addition  (i-coeff q) "i")
+                     (show-addition  (j-coeff q) "j")
+                     (show-addition  (k-coeff q) "k"))))
