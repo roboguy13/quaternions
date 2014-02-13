@@ -139,8 +139,10 @@
 ;--Checks to see if two quaternions are equal
 ;--Somewhat unnecessary and can be taken out,
 ;--but I just put it in to keep quaternion operation syntax consistent
-(define (quaternion-eq? Q R)
-  (equal? Q R))
+(define (quaternion-eq? Q . Rs)
+  (cond ((null? Rs)          #t)
+        ((equal? Q (car Rs)) (apply quaternion-eq? Q (cdr Rs)))
+        (else                #f)))
 
 ;--Multiplies a general vector by constant C
 (define (multiplyByC C V)

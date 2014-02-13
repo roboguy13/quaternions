@@ -46,13 +46,18 @@
 
 
 (define (render-post a-post)
+  (define (show-result result)
+    (if (boolean? result)
+        (~a result)
+        (show-quaternion result)))
+
   (define expr (if (equal? (string-length (post-expression a-post)) 0)
                    '()
                    (read-from-string(post-expression a-post))))
   `(div ((class "post"))
         (hr)
         (p,"Input: ", (expr->string expr))
-        (p,"Output: ",(show-quaternion (quaternion-eval expr)))))
+        (p,"Output: ",(show-result (quaternion-eval expr)))))
 
 
 ;--Put CSS here

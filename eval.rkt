@@ -111,4 +111,8 @@
        ((sin) (quaternion-sin (quaternion-eval (first E))))
        ((cos) (quaternion-cos (quaternion-eval (first E))))
        ((magnitude) (quaternion-mag (quaternion-eval (first E))))
+       
+       ((=) (apply quaternion-eq?
+                   (quaternion-eval (first E))
+                   (map quaternion-eval (restOf E))))
      ))))
