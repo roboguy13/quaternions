@@ -126,7 +126,7 @@
 ;--Returns the magnitude of a quaternion
 ;--Note that this takes a quaternion in vector (list) form
 (define (quaternion-mag Q)
-  (sqrt (norm Q)))
+  (list (sqrt (norm Q)) 0 0 0))
 
 ;--Returns the inverse of a quaternion
 ;--Takes a quaterion in vector form
@@ -259,7 +259,7 @@
                    (string-append "+"
                                   (number->string n)
                                   which)))))
-  (if (= (quaternion-mag q) 0)
+  (if (equal? (quaternion-mag q) '(0 0 0 0))
       "0"
       (string-append (show-num (real q)
                                (number->string (real q)))
