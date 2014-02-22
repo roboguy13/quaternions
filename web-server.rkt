@@ -47,9 +47,10 @@
 
 (define (render-post a-post)
   (define (show-result result)
-    (if (boolean? result)
-        (~a result)
-        (show-quaternion result)))
+    (cond
+      ((boolean? result) (~a result))
+      ((string? result) result)
+      (else (show-quaternion result))))
 
   (define expr (if (equal? (string-length (post-expression a-post)) 0)
                    '()

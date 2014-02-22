@@ -65,7 +65,25 @@
     (else
      (go L-orig))))
 
+;--Checks to see if any of the arguments is a string
+(define (stringexists? E . F)
+  (cond
+    ((null? E) #f)
+    ((string? E) #t)
+    ((list? E) (or (stringexists? (car E))
+                   (stringexists? (cdr E))
+                   (stringexists? F)))
+    (else (stringexists? F))))
 
+(define (error f E)
+  (if (stringexists? E)
+      "Unexpected Arguments."
+      (f E)))
+
+(define (error2 f E F)
+  (if (stringexists? E F)
+      "Unexpected Arguments."
+      (f E F)))
 
 ;---------------------------------------------;
 ; Here is the evaluation part of the program. ;
@@ -78,41 +96,46 @@
   (cond
     ((null? E) '())
     ((number? E) (addition->quaternion E))
-    ((symbol? E) (addition->quaternion E)) ;in the form of #+#i+...
+    ((and (symbol? E)
+          (or (regexp-match? #rx"[1-9\\./i-k](\\+|\\-)" (~a E))
+              (regexp-match? #rx"^[0-9]*\\.?[0-9]*[i-k]$" (~a E))))
+       (addition->quaternion E)) ;in the form of #+#i+...
+    ((or (symbol? E) (string? E)) "Unexpected Arguments.") ;Symbol, but not complex number (caught above)
     (else
      (case (car E)
        ((+) (cond
               ((equal? (length E) 1) 0) ;no arguments - 0 per Scheme Standard
-              ((equal? (length (arguments E)) 1) (quaternion-eval (first E))) ;one argument - equals itself
-              (else (quaternion-sum
+              ((equal? (length (arguments E)) 1) (error quaternion-eval (first E))) ;one argument - equals itself
+              (else (error2 quaternion-sum
                         (quaternion-eval (first E))
                         (quaternion-eval (cons '+ (restOf E)))))))
        ((-) (if (equal? (length (arguments E)) 1) ;just one argument, so negative, not subtraction
-                (quaternion-eval (list '* -1 (first E)))
-                (quaternion-diff
+                (error quaternion-eval (list '* -1 (first E)))
+                (error2 quaternion-diff
                     (quaternion-eval (first E))
                     (map quaternion-eval (restOf E)))))
        ((*) (cond
               ((equal? (length E) 1) 1) ;no arguments - 1 per Scheme Standard
-              ((equal? (length (arguments E)) 1) (quaternion-eval (first E))) ;one argument - equals itself
-              (else (quaternion-prod
+              ((equal? (length (arguments E)) 1) (error quaternion-eval (first E))) ;one argument - equals itself
+              (else (error2 quaternion-prod
                         (quaternion-eval (first E))
                         (quaternion-eval (cons '* (restOf E)))))))
        ((/) (if (equal? (length (arguments E)) 1) ;one argument - inverse, not division
-                (quaternion-eval (list '/ 1 (first E)))
-                (quaternion-div
+                (error quaternion-eval (list '/ 1 (first E)))
+                (error2 quaternion-div
                     (quaternion-eval (first E))
                     (map quaternion-eval (restOf E)))))
-       ((exp) (quaternion-exp (quaternion-eval (first E))))
-       ((expt) (quaternion-expt
+       ((exp) (error quaternion-exp (quaternion-eval (first E))))
+       ((expt) (error2 quaternion-expt
                    (quaternion-eval (first E))
                    (quaternion-eval (second E))))
-       ((log) (quaternion-log (quaternion-eval (first E))))
-       ((sin) (quaternion-sin (quaternion-eval (first E))))
-       ((cos) (quaternion-cos (quaternion-eval (first E))))
-       ((magnitude) (quaternion-mag (quaternion-eval (first E))))
+       ((log) (error quaternion-log (quaternion-eval (first E))))
+       ((sin) (error quaternion-sin (quaternion-eval (first E))))
+       ((cos) (error quaternion-cos (quaternion-eval (first E))))
+       ((magnitude) (error quaternion-mag (quaternion-eval (first E))))
        
-       ((=) (apply quaternion-eq?
+       ((=) (error2 quaternion-eq?
                    (quaternion-eval (first E))
                    (map quaternion-eval (restOf E))))
+       (else E)
      ))))
