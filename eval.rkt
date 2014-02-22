@@ -60,8 +60,8 @@
           (vector-sum (go (first L))
                       (go (cons '+ (restOf L))))))))
   (cond ; TODO: Add support for floating point and rational numbers
-    ((regexp-match? #rx"[1-9i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
-     (go (cons '+ (map string->symOrNum (regexp-match* "(\\+|\\-)?[0-9i-k]+|[0-9]+" (~a L-orig))))))
+    ((regexp-match? #rx"[1-9\\./i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
+     (go (cons '+ (map string->symOrNum (regexp-match* "(\\+|\\-)?[0-9\\./i-k]+|[0-9]+" (~a L-orig))))))
     (else
      (go L-orig))))
 
