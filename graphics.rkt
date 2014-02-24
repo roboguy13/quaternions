@@ -5,7 +5,7 @@
 (require sgl/gl)
 (require sgl/gl-vectors)
 
-(require "quaternion.rkt")
+(require "operations.rkt")
 (require "matrix.rkt")
 
 (define (make-point x y z)
