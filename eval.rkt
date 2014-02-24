@@ -1,6 +1,6 @@
 #lang racket
 
-(require "quaternion.rkt")
+(require "operations.rkt")
 (require "matrix.rkt")
 
 (provide quaternion-eval)
