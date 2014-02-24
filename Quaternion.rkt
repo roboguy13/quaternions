@@ -1,7 +1,7 @@
 #lang web-server/insta
 
 (require "eval.rkt")
-(require "quaternion.rkt")  ; For show-quaternion
+(require "operations.rkt")  ; For show-quaternion
 (require mzlib/string)
 
 (struct blog (posts) #:mutable)
