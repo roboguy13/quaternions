@@ -79,12 +79,12 @@
 
 (define (error f E)
   (if (stringexists? E)
-      "error: Unexpected Arguments."
+      "Unexpected Arguments."
       (f E)))
 
 (define (error2 f E F)
   (if (stringexists? E F)
-      "error2: Unexpected Arguments."
+      "Unexpected Arguments."
       (f E F)))
 
 ;---------------------------------------------;
