@@ -71,7 +71,7 @@
 (define (stringexists? E . F)
   (cond
     ((null? E) #f)
-    ((string? E) (print E) (newline) #t)
+    ((string? E) #t)
     ((list? E) (or (stringexists? (car E))
                    (stringexists? (cdr E))
                    (stringexists? F)))
