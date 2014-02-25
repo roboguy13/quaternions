@@ -225,9 +225,7 @@
 ; This is how you take the cos / sin of complex ;
 ; numbers, so hopefully it translates?          ;
 ; Verified true when only real and i are used   ;
-; in the quaternions. '(# # 0 0) - with cos.    ;
-; sin is under examination. There is a problem  ;
-; with code elsewhere here.                     ;
+; in the quaternions. '(# # 0 0).               ;
 ;-----------------------------------------------;
 
 (define (quaternion-cos Q)
@@ -244,25 +242,37 @@
 
 (define (show-quaternion q)
     ; Show a number's string representation if it isn't 0
-  (define (show-num n s)
+  (define (show-num n)
     (if (= n 0)
         ""
-        s))
+        (number->string n)))
     ; Automatically put a - instead of a + for negative numbers
     ; `which` is the string containing the unit name (i, j, k or empty)
-  (define (show-addition n which)
+  (define (show-imaginary n which)
     (string-append 
-     (if (< n 0)
-         (string-append (number->string n)
-                        which)
-         (show-num n
-                   (string-append "+"
-                                  (number->string n)
-                                  which)))))
+     (cond
+       ((= n 1) which)
+       ((= n 0) "")
+       ((< n 0) (string-append (number->string n)
+                        which))
+       (else (string-append (number->string n)
+                            which)))))
+  ;--Puts everything together in order to avoid a + at the beginning
+  (define (show-addition r i j k)
+    (define (helper a b)
+      (if (equal? "" a)
+          (if (equal? "" b)
+              ""
+              b)
+          (if (equal? "" b)
+              a
+              (if (equal? (substring b 0 1) "-")
+                  (string-append a b)
+                  (string-append a "+" b)))))
+    (helper (helper (helper r i) j) k))
   (if (equal? (quaternion-mag q) '(0 0 0 0))
       "0"
-      (string-append (show-num (real q)
-                               (number->string (real q)))
-                     (show-addition  (i-coeff q) "i")
-                     (show-addition  (j-coeff q) "j")
-                     (show-addition  (k-coeff q) "k"))))
+      (show-addition (show-num (real q))
+                     (show-imaginary  (i-coeff q) "i")
+                     (show-imaginary  (j-coeff q) "j")
+                     (show-imaginary  (k-coeff q) "k"))))
