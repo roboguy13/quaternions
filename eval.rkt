@@ -29,6 +29,8 @@
 (define (arguments E) (cdr E)) ;since car is the operation (+ - exp log ...)
 
 
+(define quaternion-rx #rx"(\\+|\\-)?[0-9\\./i-k]+|[0-9]+")
+
 ;--This can handle L in both cases:
 ;--  '(+ ## ##i ...) - not necessarily complete
 ;--  '##+##i+... - not necessarily complete
@@ -59,18 +61,17 @@
           '(0 0 0 0)
           (vector-sum (go (first L))
                       (go (cons '+ (restOf L))))))))
-  (cond ; TODO: Add support for floating point and rational numbers
-    ((regexp-match? #rx"[i-k]\\*[i-k]" (~a L-orig)) "Unexpected Arguments") ;Has a i*k or something similar
-    ((regexp-match? #rx"[1-9\\./i-k](\\+|\\-)" (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
-     (go (cons '+ (map string->symOrNum (regexp-match* "(\\+|\\-)?[0-9\\./i-k]+|[0-9]+" (~a L-orig))))))
+  (cond
+    ((regexp-match? quaternion-rx (~a L-orig)) ;this splits #+#i... to (+ # #i ...) and sends it back through
+     (go (cons '+ (map string->symOrNum (regexp-match* quaternion-rx (~a L-orig))))))
     (else
-     (go L-orig))))
+     "Unexpected Arguments")))
 
 ;--Checks to see if any of the arguments is a string
 (define (stringexists? E . F)
   (cond
     ((null? E) #f)
-    ((string? E) #t)
+    ((string? E) (print E) (newline) #t)
     ((list? E) (or (stringexists? (car E))
                    (stringexists? (cdr E))
                    (stringexists? F)))
@@ -78,12 +79,12 @@
 
 (define (error f E)
   (if (stringexists? E)
-      "Unexpected Arguments."
+      "error: Unexpected Arguments."
       (f E)))
 
 (define (error2 f E F)
   (if (stringexists? E F)
-      "Unexpected Arguments."
+      "error2: Unexpected Arguments."
       (f E F)))
 
 ;---------------------------------------------;
@@ -98,8 +99,7 @@
     ((null? E) '())
     ((number? E) (addition->quaternion E))
     ((and (symbol? E)
-          (or (regexp-match? #rx"[1-9\\./i-k](\\+|\\-)" (~a E))
-              (regexp-match? #rx"^[0-9]*\\.?[0-9]*[i-k]$" (~a E))))
+          (regexp-match? quaternion-rx (~a E)))
        (addition->quaternion E)) ;in the form of #+#i+...
     ((or (symbol? E) (string? E)) "Unexpected Arguments.") ;Symbol, but not complex number (caught above)
     (else
