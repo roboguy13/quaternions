@@ -125,8 +125,12 @@
 
 ;--Returns the magnitude of a quaternion
 ;--Note that this takes a quaternion in vector (list) form
+(define (magnitude Q)
+  (sqrt (norm Q)))
+
 (define (quaternion-mag Q)
-  (list (sqrt (norm Q)) 0 0 0))
+  (list (magnitude Q) 0 0 0))
+
 
 ;--Returns the inverse of a quaternion
 ;--Takes a quaterion in vector form
@@ -195,8 +199,8 @@
       (cons (log (real Q))
             '(0 0 0))
       (cons (log (sqrt (norm Q)))
-            (multiplyByC (* (/ (quaternion-mag (imaginary Q)))
-                            (acos (/ (real Q) (quaternion-mag Q))))
+            (multiplyByC (* (/ (magnitude (imaginary Q)))
+                            (acos (/ (real Q) (magnitude Q))))
                          (imaginary Q)))))
 
 ;--Gives the exponential of a quaternion
@@ -207,7 +211,7 @@
       (cons (exp (real Q))
             '(0 0 0))
       (multiplyByC (exp (real Q))
-                   (cons (cos (quaternion-mag (imaginary Q)))
+                   (cons (cos (magnitude (imaginary Q)))
                          (multiplyByC (* (/ (norm (imaginary Q))) (sin (norm (imaginary Q))))
                                       (imaginary Q))))))
 
