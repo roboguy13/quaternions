@@ -212,7 +212,7 @@
             '(0 0 0))
       (multiplyByC (exp (real Q))
                    (cons (cos (magnitude (imaginary Q)))
-                         (multiplyByC (* (/ (norm (imaginary Q))) (sin (norm (imaginary Q))))
+                         (multiplyByC (* (/ (sqrt (norm (imaginary Q)))) (sin (sqrt (norm (imaginary Q)))))
                                       (imaginary Q))))))
 
 ;--Gives Q^P, where at least one is a quaternion
@@ -239,10 +239,11 @@
 
 
 (define (quaternion-sin Q)
-  (quaternion-div (quaternion-diff
-                     (quaternion-exp (quaternion-prod '(0 1 0 0) Q))
-                     (quaternion-exp (quaternion-prod '(0 -1 0 0) Q)))
-                 '(0 2 0 0)))
+  (quaternion-prod
+   (quaternion-diff
+    (quaternion-exp (quaternion-prod '(0 -1 0 0) Q))
+    (quaternion-exp (quaternion-prod '(0  1 0 0) Q)))
+   '(0 0.5 0 0)))
 
 (define (show-quaternion q)
     ; Show a number's string representation if it isn't 0
