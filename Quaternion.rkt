@@ -8,6 +8,7 @@
 (struct post (expression))
 (define BLOG
   (blog '()))
+(static-files-path (current-directory))
 
 (define (start request) (render-page request))
 
@@ -21,7 +22,8 @@
                (div ((id "top"))
                     (div ((id "inner")) "Team Fourth Dimension"))
                (div ((id "menubar"))
-                    (div ((id "title")) (h1 "Quaternion Evaluation")))
+                    (div ((id "title")) (h1 "Quaternion Evaluation"))
+                    (div ((id "menu")) (a ((href "/Tutorial.pdf") (target "_blank")) "How do I use this?")))
                (div ((id "main"))(head (title "Quaternion Evaluation"))
                     (body
                      (form((action
@@ -76,10 +78,12 @@
                 "#top { width: 900px; margin: -10px auto 0}"
                 "#inner { width:200px; font-family:Verdana; font-variant:small-caps; color:#ddd; overflow:hidden; margin: 0 0 0 700px; padding:5px 0 5px 0 ; background:#b00; border-radius: 0 0 5px 5px}"
                 "#menubar {width:900px; height:45px; margin: 0 auto 0; border-radius:15px 15px 0 0}"
-                "#title {width: 500px; float:left; text-align:left; height:45px; margin:0 auto -5px; padding-left:10px; background:transparent}"
+                "#title {width: 500px; float:left; text-align:left; height:45px; margin:0 auto -10px; padding-left:10px; background:transparent}"
                 "#info {width: 400px; float:right; text-align:right; padding-right:10px; padding-top:20px; background:transparent}"
+                "#menu {width: 500px; float:right; text-align:right; padding-right:10px; padding-bottom:5px; background:transparent}"
                 "p { font-family: Verdana; color:#ddd }"
                 "a:link { font-family: Helvetica; color:#999; font-size:16px; padding-bottom:10px}"
                 "a:visited {font-family: Helvetica; color:#999; font-size:16px; padding-bottom:10px}")
         (h3 "Evaluation History:")
         ,@(map render-post (blog-posts BLOG))))
+
