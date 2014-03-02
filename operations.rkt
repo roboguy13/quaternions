@@ -180,10 +180,10 @@
   (cond
     ((null? (car Qs)) Q)
     ((and (list? (caar Qs)) (equal? (length Qs) 1)) (quaternion-div
-                                                     (quaternion-prod Q (quaternion-inv (caar Qs)))
+                                                     (quaternion-prod (quaternion-inv (caar Qs)) Q)
                                                      (cdar Qs)))
     (else (quaternion-div
-           (quaternion-prod Q (quaternion-inv (car Qs)))
+           (quaternion-prod (quaternion-inv (car Qs)) Q)
            (cdr Qs)))))
 
 ;---------------------------------------------;
