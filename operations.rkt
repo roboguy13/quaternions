@@ -275,9 +275,12 @@
                   (string-append a b)
                   (string-append a "+" b)))))
     (helper (helper (helper r i) j) k))
-  (if (equal? (quaternion-mag q) '(0 0 0 0))
-      "0"
+  (cond
+    ((number? q) (number->string q))
+    ((equal? (quaternion-mag q) '(0 0 0 0))
+      "0")
+    (else
       (show-addition (show-num (real q))
                      (show-imaginary  (i-coeff q) "i")
                      (show-imaginary  (j-coeff q) "j")
-                     (show-imaginary  (k-coeff q) "k"))))
+                     (show-imaginary  (k-coeff q) "k")))))
