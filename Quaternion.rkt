@@ -35,7 +35,8 @@
                      (div ((id "history")) ,(render-posts))
                      (br)))
                (div ((id "menubar"))
-                    (div ((id "info")) (h2 (a ((href "http://mathworld.wolfram.com/Quaternion.html") (target "_blank")) "What are Quaternions?")))))
+                    (div ((id "info2")) (h2 (a ((href "http://mathworld.wolfram.com/Quaternion.html") (target "_blank")) "What are Quaternions?")))
+                    (div ((id "info")) (h2 (a ((href "/Manual.pdf") (target "_blank")) "System Documentation")))))
              ))
           (define (insert-post-handler request)
             (blog-insert-post!
@@ -76,10 +77,11 @@
                 "#history { width:800px; overflow:hidden; margin: 10px auto 15px; padding 0 0 20px 20px; background:#222; border-radius: 15px 15px 15px 15px}"
                 "#main { width:900px; overflow:hidden; margin: 10px auto; padding 0 0 20px 20px; background-image:url('http://i923.photobucket.com/albums/ad74/rblymire79/BrushedMetal.jpg'); border-radius: 15px 15px 15px 15px}"
                 "#top { width: 900px; margin: -10px auto 0}"
-                "#inner { width:200px; font-family:Verdana; font-variant:small-caps; color:#ddd; overflow:hidden; margin: 0 0 0 700px; padding:5px 0 5px 0 ; background:#b00; border-radius: 0 0 5px 5px}"
+                "#inner { width:250px; font-family:Verdana; font-variant:small-caps; color:#ddd; overflow:hidden; margin: 0 0 0 700px; padding:5px 0 5px 0 ; background:#b00; border-radius: 0 0 5px 5px}"
                 "#menubar {width:900px; height:45px; margin: 0 auto 0; border-radius:15px 15px 0 0}"
                 "#title {width: 500px; float:left; text-align:left; height:45px; margin:0 auto -10px; padding-left:10px; background:transparent}"
                 "#info {width: 400px; float:right; text-align:right; padding-right:10px; padding-top:20px; background:transparent}"
+                "#info2 {width: 400px; float:left; text-align:left; padding-left:10px; padding-top:20px; background:transparent}"
                 "#menu {width: 500px; float:right; text-align:right; padding-right:10px; padding-bottom:5px; background:transparent}"
                 "p { font-family: Verdana; color:#ddd }"
                 "a:link { font-family: Helvetica; color:#999; font-size:16px; padding-bottom:10px}"

@@ -87,13 +87,8 @@
       "Unexpected Arguments."
       (f E F)))
 
-;---------------------------------------------;
-; Here is the evaluation part of the program. ;
-; It's still a work in progress, clearly.     ;
-;---------------------------------------------;
-
 ;--Takes input in Scheme Standard notation
-;--As it is, this returns a quaternion
+;--Returns a quaternion
 (define (quaternion-eval E)
   (cond
     ((null? E) '())
@@ -134,6 +129,7 @@
        ((sin) (error quaternion-sin (quaternion-eval (first E))))
        ((cos) (error quaternion-cos (quaternion-eval (first E))))
        ((magnitude) (error quaternion-mag (quaternion-eval (first E))))
+       ((sqrt) (error2 quaternion-expt (quaternion-eval (first E)) 1/2))
        
        ((=) (error2 quaternion-eq?
                    (quaternion-eval (first E))
