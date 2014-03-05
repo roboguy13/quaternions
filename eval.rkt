@@ -31,6 +31,7 @@
 
 (define quaternion-rx #rx"(\\+|\\-)?[0-9\\./i-k]+|[0-9]+")
 
+;--Parses quaternion addition into a vector (list)
 ;--This can handle L in both cases:
 ;--  '(+ ## ##i ...) - not necessarily complete
 ;--  '##+##i+... - not necessarily complete
@@ -77,6 +78,7 @@
                    (stringexists? F)))
     (else (stringexists? F))))
 
+;--Checks for any errors
 (define (error f E)
   (if (stringexists? E)
       "Unexpected Arguments."
@@ -88,7 +90,7 @@
       (f E F)))
 
 ;--Takes input in Scheme Standard notation
-;--Returns a quaternion
+;--Returns a quaternion that is the evaluation of the input
 (define (quaternion-eval E)
   (cond
     ((null? E) '())

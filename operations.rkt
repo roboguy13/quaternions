@@ -103,13 +103,7 @@
 (define (quaternion-conj q)
   (cons (car q) (map - (cdr q))))
 
-
-;--------------------------------------------------;
-; These changes were added by Alexa.               ;
-; But you can probably see that somewhere already. ;
-;--------------------------------------------------;
-
-;--These definitions make the code more readable
+;--Readability
 (define (real Q) (car Q))
 (define (imaginary Q) (cdr Q))
 (define (i-coeff Q) (cadr Q))
@@ -123,11 +117,12 @@
       (+ (expt (car V) 2)
          (norm (cdr V)))))
 
-;--Returns the magnitude of a quaternion
+;--Returns the magnitude of a quaternion in scalar form
 ;--Note that this takes a quaternion in vector (list) form
 (define (magnitude Q)
   (sqrt (norm Q)))
 
+;--Returns the magnitude of a quaternion in vector form
 (define (quaternion-mag Q)
   (list (magnitude Q) 0 0 0))
 
@@ -140,9 +135,7 @@
       (cons (/ (real Q) (norm Q))
             (map [λ(x)(/ x (* (norm Q) -1))] (imaginary Q)))))
 
-;--Checks to see if two quaternions are equal
-;--Somewhat unnecessary and can be taken out,
-;--but I just put it in to keep quaternion operation syntax consistent
+;--Checks quaternion equality
 (define (quaternion-eq? Q Rs)
   (cond ((null? Rs)          #t)
         ((and (list? (car Rs)) (> (length Rs) 1)) (and (quaternion-eq? Q (car Rs)) (quaternion-eq? Q (cdr Rs))))
@@ -224,20 +217,18 @@
     ((number? Q) (quaternion-expt (cons Q '(0 0 0)) P))
     (else (quaternion-exp (quaternion-prod (quaternion-log Q) P)))))
 
-;-----------------------------------------------;
-; I'm not sure whether or not this is correct.  ;
-; This is how you take the cos / sin of complex ;
-; numbers, so hopefully it translates?          ;
-; Verified true when only real and i are used   ;
-; in the quaternions. '(# # 0 0).               ;
-;-----------------------------------------------;
+;--Used in sin/cos
 (define (L Q) (multiplyByC (/ (magnitude (imaginary Q))) (imaginary Q)))
 
+;--Gives the cosine of a quaternion
+;--Takes quaternions in vector form
 (define (quaternion-cos Q)
   (multiplyByC 0.5 (quaternion-sum
                       (quaternion-exp (quaternion-prod (L Q) Q))
                       (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))))
 
+;--Gives the sine of a quaternion
+;--Takes quaternions in vector form
 (define (quaternion-sin Q) 
   (if (= (magnitude (imaginary Q)) 0)
       (sin (real Q))
@@ -247,6 +238,8 @@
         (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))
        (multiplyByC 2 (L Q)))))
 
+;--Gives a formatted output as an extended version of
+;--the complex numbers: #+#i+#j+#k (omitting for 0 coefficients)
 (define (show-quaternion q)
     ; Show a number's string representation if it isn't 0
   (define (show-num n)

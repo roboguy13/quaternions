@@ -15,6 +15,7 @@
 (define (parse-post bindings)
   (post (extract-binding/single 'expression bindings)))
 
+;--Renders the page
 (define (render-page request)
   (local [(define (response-generator make-url)
             (response/xexpr
@@ -47,7 +48,8 @@
 (define (blog-insert-post! a-blog a-post)
   (set-blog-posts! a-blog (cons a-post (blog-posts a-blog))))
 
-
+;--Renders a specific post
+;--This is what calls the evaluation function
 (define (render-post a-post)
   (define (show-result result)
     (cond
@@ -64,7 +66,8 @@
         (p,"Output: ",(show-result (quaternion-eval expr)))))
 
 
-;--Put CSS here
+;--Renders all posts
+;--Also contains CSS for web server
 (define (render-posts)
   `(div ((class "posts"))
         '(style ((type "text/css"))
