@@ -231,19 +231,21 @@
 ; Verified true when only real and i are used   ;
 ; in the quaternions. '(# # 0 0).               ;
 ;-----------------------------------------------;
+(define (L Q) (multiplyByC (/ (magnitude (imaginary Q))) (imaginary Q)))
 
 (define (quaternion-cos Q)
   (multiplyByC 0.5 (quaternion-sum
-                      (quaternion-exp (quaternion-prod '(0 1 0 0) Q))
-                      (quaternion-exp (quaternion-prod '(0 -1 0 0) Q)))))
+                      (quaternion-exp (quaternion-prod (L Q) Q))
+                      (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))))
 
-
-(define (quaternion-sin Q)
-  (quaternion-prod
-   (quaternion-diff
-    (quaternion-exp (quaternion-prod '(0 -1 0 0) Q))
-    (quaternion-exp (quaternion-prod '(0  1 0 0) Q)))
-   '(0 0.5 0 0)))
+(define (quaternion-sin Q) 
+  (if (= (magnitude (imaginary Q)) 0)
+      (sin (real Q))
+      (quaternion-div
+       (quaternion-diff
+        (quaternion-exp (quaternion-prod (L Q) Q))
+        (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))
+       (multiplyByC 2 (L Q)))))
 
 (define (show-quaternion q)
     ; Show a number's string representation if it isn't 0
