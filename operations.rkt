@@ -223,9 +223,11 @@
 ;--Gives the cosine of a quaternion
 ;--Takes quaternions in vector form
 (define (quaternion-cos Q)
-  (multiplyByC 0.5 (quaternion-sum
-                      (quaternion-exp (quaternion-prod (L Q) Q))
-                      (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))))
+  (if (= (magnitude (imaginary Q)) 0)
+      (cos (real Q))
+      (multiplyByC 0.5 (quaternion-sum
+                        (quaternion-exp (quaternion-prod (L Q) Q))
+                        (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q))))))
 
 ;--Gives the sine of a quaternion
 ;--Takes quaternions in vector form
