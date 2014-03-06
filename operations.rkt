@@ -226,8 +226,8 @@
   (if (= (magnitude (imaginary Q)) 0)
       (cos (real Q))
       (multiplyByC 0.5 (quaternion-sum
-                        (quaternion-exp (quaternion-prod (L Q) Q))
-                        (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q))))))
+                        (quaternion-exp (quaternion-prod (cons 0 (L Q)) Q))
+                        (quaternion-exp (quaternion-prod (cons 0 (multiplyByC -1 (L Q))) Q))))))
 
 ;--Gives the sine of a quaternion
 ;--Takes quaternions in vector form
@@ -236,9 +236,9 @@
       (sin (real Q))
       (quaternion-div
        (quaternion-diff
-        (quaternion-exp (quaternion-prod (L Q) Q))
-        (quaternion-exp (quaternion-prod (multiplyByC -1 (L Q)) Q)))
-       (multiplyByC 2 (L Q)))))
+        (quaternion-exp (quaternion-prod (cons 0 (L Q)) Q))
+        (quaternion-exp (quaternion-prod (cons 0 (multiplyByC -1 (L Q))) Q)))
+       (cons 0 (multiplyByC 2 (L Q))))))
 
 ;--Gives a formatted output as an extended version of
 ;--the complex numbers: #+#i+#j+#k (omitting for 0 coefficients)
